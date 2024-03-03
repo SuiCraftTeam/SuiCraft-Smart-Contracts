@@ -1,8 +1,4 @@
 module suicraft::coin {
-    // use std::debug;
-    // use sui::url::{Self};
-    // use std::string;
-    // use sui::object::{Self, UID};
     use std::option;
     use sui::coin;
     use sui::transfer;
@@ -17,7 +13,6 @@ module suicraft::coin {
             b"Symbol",
             b"Name",
             b"Description",
-            // option::some(url::new_unsafe_from_bytes(b"https://suicraft.xyz/images/tokens/abc/logo.png")),
             option::none(),
             ctx
         );

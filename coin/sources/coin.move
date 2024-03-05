@@ -1,5 +1,4 @@
 module suicraft::coin {
-    use std::debug;
     use std::ascii;
     use std::string;
     use std::option;

@@ -1,4 +1,5 @@
 module suicraft::coin {
+    use std::debug;
     use std::ascii;
     use std::string;
     use std::option;
@@ -54,7 +55,7 @@ module suicraft::coin {
     public entry fun update_icon_url(
         treasury: &coin::TreasuryCap<suicraft::coin::COIN>,
         metadata: &mut coin::CoinMetadata<suicraft::coin::COIN>,
-         url: ascii::String
+        url: ascii::String
     ) {
         coin::update_icon_url(treasury, metadata, url);
     }
@@ -86,7 +87,7 @@ module suicraft::coin {
         ctx: &mut TxContext,
     ) {
         let coin = coin::mint(treasury_cap, amount, ctx);
-        transfer::public_transfer(coin, recipient)
+        transfer::public_transfer(coin, recipient);
     }
 
 }

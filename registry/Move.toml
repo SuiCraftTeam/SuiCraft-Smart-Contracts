@@ -1,0 +1,17 @@
+[package]
+name = "suicraft_service"
+version = "0.1.0"
+license = "MIT"
+authors = ["SuiCraftTeam (https://github.com/SuiCraftTeam)"]
+# published-at = "" # to be uncommented and assigned package-id after being published
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
+
+[addresses]
+suicraft_service = "0x0" # to be replaced with package-id after being published
+
+[dev-dependencies]
+
+[dev-addresses]
+

@@ -1,6 +1,8 @@
 [package]
 name = "suicraft"
 version = "0.1.0"
+license = "MIT"
+authors = ["SuiCraftTeam (https://github.com/SuiCraftTeam)"]
 
 [dependencies]
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }

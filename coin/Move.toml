@@ -7,7 +7,7 @@ authors = ["SuiCraftTeam (https://github.com/SuiCraftTeam)"]
 [dependencies]
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
 
-suicraft_service = { local = "../registry" }
+suicraft_service = { local = "../service" }
 
 [addresses]
 suicraft_user = "0x0"

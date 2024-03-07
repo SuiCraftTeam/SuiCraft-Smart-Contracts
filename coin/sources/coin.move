@@ -6,14 +6,14 @@ module suicraft_user::coin {
     use sui::deny_list;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
-    use suicraft_service::registry;
+    use suicraft_service::coin_issuance;
 
     struct COIN has drop {}
 
     fun init(otw: COIN, ctx: &mut TxContext) {
         let (treasury_cap, deny_cap, meta_data) = coin::create_regulated_currency(
             otw,
-            2,
+            18,
             b"$MYCOIN",
             b"My Coin",
             b"This coin is created by SuiCraft, meta data is to be updated.",
@@ -21,7 +21,7 @@ module suicraft_user::coin {
             ctx
         );
 
-        registry::register_coin(&treasury_cap, &deny_cap, &meta_data, ctx);
+        coin_issuance::register_coin(&treasury_cap, &deny_cap, &meta_data, ctx);
 
         let sender = tx_context::sender(ctx);
         transfer::public_transfer(treasury_cap, sender);

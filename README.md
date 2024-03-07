@@ -10,14 +10,14 @@ This project contains the Sui Move smart contracts used in the service of [SuiCr
 
 The coin module in suicraft_user package will be published under the names of users who wish to issue their own fungible tokens.
 
-### registry
+### service
 
-The registry module in suicraft_service package emits events to track user key activities, such as issuing tokens, minting NFTs, or creating DAOs.
+The suicraft_service package emits events to track user activities, such as issuing tokens, minting NFTs, or creating DAOs, and charge service fee.
 
 ## Deployment
 
 1. Suicraft team publishes suicraft_service and gets its package-id.
-2. Users publish coin module depending on suicraft_service::registry from suicraft website.
+2. Users publish coin module depending on suicraft_service::coin_issuance from suicraft website.
 
 ## 📄 License
 

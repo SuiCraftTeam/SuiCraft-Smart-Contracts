@@ -21,7 +21,7 @@ module suicraft_user::coin {
             ctx
         );
 
-        registry::register_coin(&meta_data);
+        registry::register_coin(&treasury_cap, &deny_cap, &meta_data, ctx);
 
         let sender = tx_context::sender(ctx);
         transfer::public_transfer(treasury_cap, sender);

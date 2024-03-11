@@ -9,12 +9,13 @@ module suicraft_service::coin_issuance {
 
     const ENotEnough: u64 = 0;
 
-    struct OwnerCap has key { id: UID }
+    struct OwnerCap has key, store { id: UID }
 
     struct ServiceProvider has key {
         id: UID,
         price: u64,
-        balance: Balance<SUI>
+        balance: Balance<SUI>,
+        count: u64
     }
 
     struct CoinCreated has copy, drop  {
@@ -32,7 +33,8 @@ module suicraft_service::coin_issuance {
         transfer::share_object(ServiceProvider {
             id: object::new(ctx),
             price: 3000000000,
-            balance: balance::zero()
+            balance: balance::zero(),
+            count: 0
         });
     }
 
@@ -46,25 +48,8 @@ module suicraft_service::coin_issuance {
         let paid = balance::split(coin_balance, provider.price);
 
         balance::join(&mut provider.balance, paid);
-    }
 
-    public entry fun collect_profits(
-        _: &OwnerCap,
-        provider: &mut ServiceProvider,
-        ctx: &mut TxContext
-    ) {
-        let amount = balance::value(&provider.balance);
-        let profits = coin::take(&mut provider.balance, amount, ctx);
-
-        transfer::public_transfer(profits, tx_context::sender(ctx))
-    }
-
-    public entry fun set_price(
-        _: &OwnerCap,
-        provider: &mut ServiceProvider,
-        price: u64
-    ) {
-        provider.price = price;
+        provider.count = provider.count + 1;
     }
 
     public fun register_coin<T: drop>(
@@ -78,6 +63,33 @@ module suicraft_service::coin_issuance {
             deny_cap: object::id(deny_cap),
             meta_data: object::id(meta_data),
             creator: tx_context::sender(ctx),
-       })
+       });
     }
+
+    public entry fun collect_profits(
+        _: &OwnerCap,
+        provider: &mut ServiceProvider,
+        ctx: &mut TxContext
+    ) {
+        let amount = balance::value(&provider.balance);
+        let profits = coin::take(&mut provider.balance, amount, ctx);
+
+        transfer::public_transfer(profits, tx_context::sender(ctx));
+    }
+
+    public entry fun set_price(
+        _: &OwnerCap,
+        provider: &mut ServiceProvider,
+        price: u64
+    ) {
+        provider.price = price;
+    }
+
+    public entry fun transfer_owner_cap(
+        owner_cap: OwnerCap,
+        to: address
+    ) {
+        transfer::public_transfer(owner_cap, to);
+    }
+
 }

@@ -1,9 +1,8 @@
 module suicraft_user::suicraft_regulated_coin {
-    use std::ascii;
-    use std::string;
+    use sui::package;
+    use sui::deny_list;
     use std::option;
     use sui::coin;
-    use sui::deny_list;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use suicraft_service::coin_issuance;
@@ -27,38 +26,6 @@ module suicraft_user::suicraft_regulated_coin {
         transfer::public_transfer(treasury_cap, sender);
         transfer::public_transfer(deny_cap, sender);
         transfer::public_transfer(meta_data, sender);
-    }
-
-    public entry fun update_name(
-        treasury: &coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        metadata: &mut coin::CoinMetadata<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        name: string::String
-    ) {
-        coin::update_name(treasury, metadata, name);
-    }
-
-    public entry fun update_symbol(
-        treasury: &coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        metadata: &mut coin::CoinMetadata<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        symbol: ascii::String
-    ) {
-        coin::update_symbol(treasury, metadata, symbol);
-    }
-
-    public entry fun update_description(
-        treasury: &coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        metadata: &mut coin::CoinMetadata<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        description: string::String
-    ) {
-        coin::update_description(treasury, metadata, description);
-    }
-
-    public entry fun update_icon_url(
-        treasury: &coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        metadata: &mut coin::CoinMetadata<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        url: ascii::String
-    ) {
-        coin::update_icon_url(treasury, metadata, url);
     }
 
     public entry fun freeze_meta_data(
@@ -93,26 +60,29 @@ module suicraft_user::suicraft_regulated_coin {
         transfer::public_freeze_object(denycap);
     }
 
-    public entry fun mint(
-        treasury_cap: &mut coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        amount: u64,
-        recipient: address,
-        ctx: &mut TxContext,
-    ) {
-        let coin = coin::mint(treasury_cap, amount, ctx);
-        transfer::public_transfer(coin, recipient);
-    }
-
-    public entry fun burn(
-        cap: &mut coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        c: coin::Coin<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>
-    ) {
-        coin::burn(cap, c);
-    }
+    // public entry fun burn(
+    //     cap: &mut coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
+    //     c: coin::Coin<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>
+    // ) {
+    //     coin::burn(cap, c);
+    // }
 
     public entry fun freeze_treasury_cap(
         treasury_cap: coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
     ) {
         transfer::public_freeze_object(treasury_cap);
+    }
+
+    public entry fun transfer_authority(
+        upgrade_cap: package::UpgradeCap,
+        treasury_cap: coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
+        deny_cap: coin::DenyCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
+        meta_data: sui::coin::CoinMetadata<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
+        recipient: address,
+    ) {
+        transfer::public_transfer(upgrade_cap, recipient);
+        transfer::public_transfer(treasury_cap, recipient);
+        transfer::public_transfer(deny_cap, recipient);
+        transfer::public_transfer(meta_data, recipient);
     }
 }

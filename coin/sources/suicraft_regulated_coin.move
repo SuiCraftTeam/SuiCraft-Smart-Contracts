@@ -28,12 +28,6 @@ module suicraft_user::suicraft_regulated_coin {
         transfer::public_transfer(meta_data, sender);
     }
 
-    public entry fun freeze_meta_data(
-        metadata: coin::CoinMetadata<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>
-    ) {
-        transfer::public_freeze_object(metadata);
-    }
-
     public entry fun add_addr_to_deny_list(
         denylist: &mut deny_list::DenyList,
         denycap: &mut coin::DenyCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
@@ -54,12 +48,6 @@ module suicraft_user::suicraft_regulated_coin {
         coin::deny_list_remove(denylist, denycap, denyaddy, ctx);
     }
 
-    public entry fun freeze_deny_cap(
-        denycap: coin::DenyCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-    ) {
-        transfer::public_freeze_object(denycap);
-    }
-
     // public entry fun burn(
     //     cap: &mut coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
     //     c: coin::Coin<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>
@@ -67,22 +55,55 @@ module suicraft_user::suicraft_regulated_coin {
     //     coin::burn(cap, c);
     // }
 
+    public entry fun freeze_meta_data(
+        metadata: coin::CoinMetadata<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>
+    ) {
+        transfer::public_freeze_object(metadata);
+    }
+
+    public entry fun freeze_deny_cap(
+        denycap: coin::DenyCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
+    ) {
+        transfer::public_freeze_object(denycap);
+    }
+
     public entry fun freeze_treasury_cap(
         treasury_cap: coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
     ) {
         transfer::public_freeze_object(treasury_cap);
     }
 
-    public entry fun transfer_authority(
+    public entry fun freeze_upgrade_cap(
         upgrade_cap: package::UpgradeCap,
-        treasury_cap: coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
-        deny_cap: coin::DenyCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
+    ) {
+        transfer::public_freeze_object(upgrade_cap);
+    }
+
+    public entry fun transfer_meta_data(
         meta_data: sui::coin::CoinMetadata<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
         recipient: address,
     ) {
-        transfer::public_transfer(upgrade_cap, recipient);
-        transfer::public_transfer(treasury_cap, recipient);
-        transfer::public_transfer(deny_cap, recipient);
         transfer::public_transfer(meta_data, recipient);
+    }
+
+    public entry fun transfer_deny_cap(
+        deny_cap: coin::DenyCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
+        recipient: address,
+    ) {
+        transfer::public_transfer(deny_cap, recipient);
+    }
+
+    public entry fun transfer_treasury_cap(
+        treasury_cap: coin::TreasuryCap<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>,
+        recipient: address,
+    ) {
+        transfer::public_transfer(treasury_cap, recipient);
+    }
+
+    public entry fun transfer_upgrade_cap(
+        upgrade_cap: package::UpgradeCap,
+        recipient: address,
+    ) {
+        transfer::public_transfer(upgrade_cap, recipient);
     }
 }

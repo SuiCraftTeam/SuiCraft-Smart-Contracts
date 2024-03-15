@@ -1,28 +1,28 @@
 module suicraft_service::coin_issuance {
+    use std::ascii;
     use sui::transfer;
     use sui::event;
     use sui::sui::SUI;
     use sui::coin::{Self, Coin};
-    use sui::object::{Self, ID, UID};
+    use sui::object::{Self, UID};
     use sui::balance::{Self, Balance};
     use sui::tx_context::{Self, TxContext};
+    use std::type_name;
 
-    const ENotEnough: u64 = 0;
+
+    const EBadWitness: u64 = 0;
+    const ENotEnough: u64 = 1;
 
     struct OwnerCap has key, store { id: UID }
 
     struct ServiceProvider has key {
         id: UID,
-        price: u64,
         balance: Balance<SUI>,
-        count: u64
     }
 
     struct CoinCreated has copy, drop  {
-        treasury_cap: ID,
-        deny_cap: ID,
-        meta_data: ID,
         creator: address,
+        coin_type: vector<u8>
     }
 
     fun init(ctx: &mut TxContext) {
@@ -32,38 +32,33 @@ module suicraft_service::coin_issuance {
 
         transfer::share_object(ServiceProvider {
             id: object::new(ctx),
-            price: 3000000000,
             balance: balance::zero(),
-            count: 0
+        });
+    }
+
+    public fun emit_coin_created<T: drop>(
+        witness: &T,
+        ctx: &TxContext
+    ) {
+        assert!(sui::types::is_one_time_witness(witness), EBadWitness);
+
+        event::emit(CoinCreated {
+            creator: tx_context::sender(ctx),
+            coin_type: ascii::into_bytes(type_name::into_string(type_name::get_with_original_ids<T>()))
         });
     }
 
     public entry fun pay_for_service(
         provider: &mut ServiceProvider,
-        payment: &mut Coin<SUI>
+        payment: &mut Coin<SUI>,
+        price: u64,
     ) {
-        assert!(coin::value(payment) >= provider.price, ENotEnough);
+        assert!(coin::value(payment) >= price, ENotEnough);
 
         let coin_balance = coin::balance_mut(payment);
-        let paid = balance::split(coin_balance, provider.price);
+        let paid = balance::split(coin_balance, price);
 
         balance::join(&mut provider.balance, paid);
-
-        provider.count = provider.count + 1;
-    }
-
-    public fun register_coin<T: drop>(
-        treasury_cap: &coin::TreasuryCap<T>,
-        deny_cap: &coin::DenyCap<T>,
-        meta_data: &coin::CoinMetadata<T>,
-        ctx: &TxContext
-    ) {
-        event::emit(CoinCreated {
-            treasury_cap: object::id(treasury_cap),
-            deny_cap: object::id(deny_cap),
-            meta_data: object::id(meta_data),
-            creator: tx_context::sender(ctx),
-       });
     }
 
     public entry fun collect_profits(
@@ -75,14 +70,6 @@ module suicraft_service::coin_issuance {
         let profits = coin::take(&mut provider.balance, amount, ctx);
 
         transfer::public_transfer(profits, tx_context::sender(ctx));
-    }
-
-    public entry fun set_price(
-        _: &OwnerCap,
-        provider: &mut ServiceProvider,
-        price: u64
-    ) {
-        provider.price = price;
     }
 
     public entry fun transfer_owner_cap(

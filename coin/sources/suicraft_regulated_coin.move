@@ -10,17 +10,17 @@ module suicraft_user::suicraft_regulated_coin {
     struct SUICRAFT_REGULATED_COIN has drop {}
 
     fun init(otw: SUICRAFT_REGULATED_COIN, ctx: &mut TxContext) {
+        coin_issuance::emit_coin_created(&otw, ctx);
+
         let (treasury_cap, deny_cap, meta_data) = coin::create_regulated_currency(
             otw,
             9,
             b"$MYCOIN",
             b"My Coin",
-            b"This coin is created by SuiCraft, meta data is to be updated.",
+            b"Created using https://suicraft.xyz",
             option::none(),
             ctx
         );
-
-        coin_issuance::register_coin(&treasury_cap, &deny_cap, &meta_data, ctx);
 
         let sender = tx_context::sender(ctx);
         transfer::public_transfer(treasury_cap, sender);

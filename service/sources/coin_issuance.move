@@ -1,5 +1,5 @@
 module suicraft_service::coin_issuance {
-    use std::ascii;
+    use std::string;
     use sui::transfer;
     use sui::event;
     use sui::sui::SUI;
@@ -8,7 +8,6 @@ module suicraft_service::coin_issuance {
     use sui::balance::{Self, Balance};
     use sui::tx_context::{Self, TxContext};
     use std::type_name;
-
 
     const EBadWitness: u64 = 0;
     const ENotEnough: u64 = 1;
@@ -22,8 +21,8 @@ module suicraft_service::coin_issuance {
 
     struct CoinOperation has copy, drop  {
         authority: address,
-        coin_type: vector<u8>,
-        operation: vector<u8>
+        coin_type: string::String,
+        operation: string::String
     }
 
     fun init(ctx: &mut TxContext) {
@@ -43,8 +42,8 @@ module suicraft_service::coin_issuance {
     ) {
         event::emit(CoinOperation {
             authority: tx_context::sender(ctx),
-            coin_type: ascii::into_bytes(type_name::into_string(type_name::get_with_original_ids<T>())),
-            operation: op
+            coin_type: string::from_ascii(type_name::into_string(type_name::get_with_original_ids<T>())),
+            operation: string::utf8(op)
         });
     }
 

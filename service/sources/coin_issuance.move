@@ -20,9 +20,10 @@ module suicraft_service::coin_issuance {
         balance: Balance<SUI>,
     }
 
-    struct CoinCreated has copy, drop  {
-        creator: address,
-        coin_type: vector<u8>
+    struct CoinOperation has copy, drop  {
+        authority: address,
+        coin_type: vector<u8>,
+        operation: vector<u8>
     }
 
     fun init(ctx: &mut TxContext) {
@@ -36,15 +37,14 @@ module suicraft_service::coin_issuance {
         });
     }
 
-    public fun emit_coin_created<T: drop>(
-        witness: &T,
+    public entry fun emit_coin_operation<T: drop>(
+        op: vector<u8>,
         ctx: &TxContext
     ) {
-        assert!(sui::types::is_one_time_witness(witness), EBadWitness);
-
-        event::emit(CoinCreated {
-            creator: tx_context::sender(ctx),
-            coin_type: ascii::into_bytes(type_name::into_string(type_name::get_with_original_ids<T>()))
+        event::emit(CoinOperation {
+            authority: tx_context::sender(ctx),
+            coin_type: ascii::into_bytes(type_name::into_string(type_name::get_with_original_ids<T>())),
+            operation: op
         });
     }
 

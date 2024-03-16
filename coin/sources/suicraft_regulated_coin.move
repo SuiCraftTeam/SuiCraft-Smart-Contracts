@@ -10,8 +10,6 @@ module suicraft_user::suicraft_regulated_coin {
     struct SUICRAFT_REGULATED_COIN has drop {}
 
     fun init(otw: SUICRAFT_REGULATED_COIN, ctx: &mut TxContext) {
-        coin_issuance::emit_coin_created(&otw, ctx);
-
         let (treasury_cap, deny_cap, meta_data) = coin::create_regulated_currency(
             otw,
             9,
@@ -26,6 +24,8 @@ module suicraft_user::suicraft_regulated_coin {
         transfer::public_transfer(treasury_cap, sender);
         transfer::public_transfer(deny_cap, sender);
         transfer::public_transfer(meta_data, sender);
+
+        coin_issuance::emit_coin_operation<suicraft_user::suicraft_regulated_coin::SUICRAFT_REGULATED_COIN>(b"created", ctx);
     }
 
     public entry fun add_addr_to_deny_list(

@@ -9,8 +9,7 @@ module suicraft_service::coin_issuance {
     use sui::tx_context::{Self, TxContext};
     use std::type_name;
 
-    const EBadWitness: u64 = 0;
-    const ENotEnough: u64 = 1;
+    const ENotEnough: u64 = 0;
 
     struct OwnerCap has key, store { id: UID }
 

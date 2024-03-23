@@ -69,6 +69,7 @@ module suicraft_user::non_fungible_token {
     }
 
     public entry fun mint(
+        _: &AuthorityCap,
         name: vector<u8>,
         description: vector<u8>,
         url: vector<u8>,
@@ -100,7 +101,7 @@ module suicraft_user::non_fungible_token {
     }
 
     public entry fun burn(
-        nft: NFT, 
+        nft: NFT,
         _: &mut TxContext
     ) {
         let NFT { id, name: _, description: _, url: _ } = nft;
